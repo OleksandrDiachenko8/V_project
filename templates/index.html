@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Page</title>
+</head>
+<body>
+<h1>My test page</h1>
+<p>
+{% for question in questions %}
+{{question.question_text}}</p>
+<p>{{question.answer_variants.variant1}}</p>
+<p>{{question.answer_variants.variant2}}</p>
+<p>{{question.answer_variants.variant3}}</p>
+<p>{{question.answer_variants.variant4}}</p>
+{% endfor %}
+</body>
+
+</html>
+

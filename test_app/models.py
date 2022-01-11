@@ -111,16 +111,3 @@ class Result(models.Model):
 
     def __str__(self):
         return f'{self.user_id}-{self.points}'
-
-
-
-#
-# class GridAnswer(models.Model):
-#     question_id = models.OneToOneField(Question, on_delete=models.CASCADE, null=True)
-#     correct_answer = models.CharField('', max_length=40, blank=True)
-#     answer_line = models.CharField('', max_length=30)
-#     answer_column = models.CharField('', max_length=30)
-#
-#     class Meta:
-#         verbose_name = 'Відповідь на вставку пропусків'
-#         verbose_name_plural = 'Відповіді на вставку пропусків'

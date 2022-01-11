@@ -1,6 +1,6 @@
 import math
 import random
-from test_app.models import Question, TestedUser
+from test_app.models import Question, TestedUser, Answer, Answer_variants
 
 
 # функція вибірки питань
@@ -59,3 +59,35 @@ def check_add_user(data):
 def result_fit(data):
     answer_block = data.objects.all()
     print(answer_block)
+
+
+def saveAnswer(data):
+    def check_answer(question, answer, answer_variant):
+        if question.question_type == 1:
+            if answer == question.correct_answer:
+                point = question.max_points
+                return point
+            else:
+                return 0
+        elif question.question_type == 2:
+            correct_answer = "variant" + str(answer_variant.correct_numbers)
+            if answer == answer_variant[correct_answer]:
+                point = question.max_points
+                return point
+            else:
+                return 0
+        elif question.question_type == 3:
+            pass
+        else:
+            pass
+
+    user_id = TestedUser.objects.get(id=data[0]['user_id'])
+    all_questions_list = Question.objects.all()
+    answer_variants = Answer_variants.objects.all()
+    for elem in data:
+        question = all_questions_list.get(id=elem['question_id'])
+        answer_variant = answer_variants.get(id=elem['question_id'])
+        check_answer(question, elem['answer'], answer_variant)
+        b = Answer(user_id=user_id, question_id=question, answer=elem['answer'], answer_time=elem['answer_time'])
+        print(b.answer)
+

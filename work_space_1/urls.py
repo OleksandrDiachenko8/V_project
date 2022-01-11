@@ -18,18 +18,19 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
 from test_app import views  # ??????
-from test_app.views import print_questions, ResultApiView, TestedUserApiView, AnswerApiView
+from test_app.views import print_questions, ResultApiView, TestedUserApiView, AnswerApiView, AnswerApi
 
 router = SimpleRouter()
 router.register(r'user', TestedUserApiView)
 router.register(r'result', ResultApiView)
-router.register(r'answer', AnswerApiView)
+
 
 urlpatterns = [
     path('', print_questions),
     path('admin/', admin.site.urls),
     # path('api-auth/', include('rest_framework.urls')),
     path('testing/', views.Testing.as_view()),
+    path('answer/', views.AnswerApi.as_view()),
    # path('answer/', views.AnswerApiView.as_view()),
 ]
 

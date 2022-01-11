@@ -27,8 +27,7 @@ admin.site.register(QuestionType, Question_t)
 
 
 class AnswerVariants(admin.ModelAdmin):
-    list_display = ('variant1', 'istrue1', 'variant2', 'istrue2', 'variant3', 'istrue3', 'variant4', 'istrue4', \
-    'variant5', 'istrue5', 'variant6', 'istrue6',)
+    list_display = ('numbers_true', 'variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6')
     search_fields = ('variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6',)
 
 

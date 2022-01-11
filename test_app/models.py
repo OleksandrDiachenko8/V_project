@@ -40,18 +40,13 @@ class Tests(models.Model):
 
 # Модель що описує відповіді на питання
 class Answer_variants(models.Model):
+    numbers_true = models.CharField('Номери правильних варіантів через кому', blank=True, null=True,  max_length=12)
     variant1 = models.CharField('Варiант 1', max_length=100, blank=True)
-    istrue1 = models.BooleanField('вірний?', default=False)
     variant2 = models.CharField('Варiант 2', max_length=100, blank=True)
-    istrue2 = models.BooleanField('вірний?', default=False)
     variant3 = models.CharField('Варiант 3', max_length=100, blank=True)
-    istrue3 = models.BooleanField('вірний?', default=False)
     variant4 = models.CharField('Варiант 4', max_length=100, blank=True)
-    istrue4 = models.BooleanField('вірний?', default=False)
     variant5 = models.CharField('Варiант 5', max_length=100, blank=True)
-    istrue5 = models.BooleanField('вірний?', default=False)
     variant6 = models.CharField('Варiант 6', max_length=100, blank=True)
-    istrue6 = models.BooleanField('вірний?', default=False)
 
     class Meta:
         verbose_name = 'Варiанти відповіді'

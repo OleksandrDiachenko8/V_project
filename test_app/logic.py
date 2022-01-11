@@ -1,9 +1,10 @@
 import math
 import random
-from test_app.models import Question, TestedUser, Answer, Answer_variants
+from test_app.models import Question, TestedUser, Answer, Answer_variants, QuestionType
 
 
 # функція вибірки питань
+
 def question():
     def question_choose(difficulty, quantity):
         k = 0
@@ -63,15 +64,16 @@ def result_fit(data):
 
 def saveAnswer(data):
     def check_answer(question, answer, answer_variant):
-        if question.question_type == 1:
+
+        if question.question_type.name == 'S':
             if answer == question.correct_answer:
                 point = question.max_points
                 return point
             else:
                 return 0
-        elif question.question_type == 2:
-            correct_answer = "variant" + str(answer_variant.correct_numbers)
-            if answer == answer_variant[correct_answer]:
+        elif question.question_type.name == 'SC':
+            correct_answer = 'variant' + answer_variant.numbers_true
+            if answer == answer_variant.serializable_value(correct_answer):
                 point = question.max_points
                 return point
             else:
@@ -81,13 +83,17 @@ def saveAnswer(data):
         else:
             pass
 
-    user_id = TestedUser.objects.get(id=data[0]['user_id'])
+    user = TestedUser.objects.get(id=data[0]['user_id'])
     all_questions_list = Question.objects.all()
     answer_variants = Answer_variants.objects.all()
+    result = 0
+    max_result = 0
     for elem in data:
         question = all_questions_list.get(id=elem['question_id'])
         answer_variant = answer_variants.get(id=elem['question_id'])
-        check_answer(question, elem['answer'], answer_variant)
-        b = Answer(user_id=user_id, question_id=question, answer=elem['answer'], answer_time=elem['answer_time'])
-        print(b.answer)
-
+        point = check_answer(question, elem['answer'], answer_variant)
+        result += point
+        max_result += question.max_points
+        b = Answer(user_id=user, question_id=question, answer=elem['answer'], answer_time=elem['answer_time'], point=point)
+        print(b.point)
+    print(result, max_result)

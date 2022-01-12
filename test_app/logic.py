@@ -58,33 +58,12 @@ def check_add_user(data):
 
 # save user answers and get result
 def save_answer(data):
-
-    def check_answer(question, answer, answer_variant):
-
-        if question.question_type.name == 'S':
-            if answer == question.correct_answer:
-                point = question.max_points
-                return point
-            else:
-                return 0
-        elif question.question_type.name == 'SC':
-            correct_answer = 'variant' + answer_variant.numbers_true
-            if answer == answer_variant.serializable_value(correct_answer):
-                point = question.max_points
-                return point
-            else:
-                return 0
-        elif question.question_type == 3:
-            pass
-        else:
-            pass
-
     #                data
     # [ {
     #     "user_id": 9,
     #     "question_id": 23,
-    #     "answer": "відповідь на це питання",
-    #     "answer_time": час в секундах
+    #     "answer": "відповідь на це питання, відповідь2 на це питання"
+    #     "answer_time": [час в секундах]
     # },]
 
     # витягуємо користувача через user_id from request after testing
@@ -97,11 +76,44 @@ def save_answer(data):
     answer_variants = Answer_variants.objects.all()
 
     for elem in data:
-        question = all_questions_list.get(id=elem['question_id'])
-        answer_variant = answer_variants.get(id=elem['question_id'])
-        point = check_answer(question, elem['answer'], answer_variant)
-        user_result  += point
-        max_test_points += question.max_points
-        b = Answer(user_id=user, question_id=question, answer=elem['answer'], answer_time=elem['answer_time'], point=point)
-        print(b.point)
-    print(result, max_result)
+        current_question = all_questions_list.get(id=elem['question_id'])  # вибираєм питання по id from request
+        max_test_points += current_question.max_points
+        # функція для простого питання
+        if current_question.question_type.name == 'S':
+            point = 1
+            pass
+            # функція для простого питання
+            # if answer == question.correct_answer:
+            #     point = question.max_points
+            # else:
+            #     point = 0
+        # функція для simple-choise питання
+        elif current_question.question_type.name == 'SC':
+            point = 1
+            pass
+            # функція для simple-choise питання
+            # correct_answer = 'variant' + answer_variant.numbers_true
+            # if answer == answer_variant.serializable_value(correct_answer):
+            #     point = question.max_points
+            # else:
+            #     point = 0
+        # функція для multiple-choise питання
+        elif current_question.question_type.name == 'MC':
+            point = 1
+            pass
+        # функція для grids питання
+        else:
+            point = 1
+            pass
+
+        user_result += point
+        table_entry = Answer(user_id=user, question_id=current_question, answer=elem['answer'], \
+                             answer_time=elem['answer_time'], point=point)
+        # table_entry.save()
+        print(table_entry.user_id, table_entry.question_id, table_entry.answer, table_entry.answer_time, table_entry.point)
+
+        # answer_variant = answer_variants.get(id=elem['question_id'])
+
+    print('max_test_points =', max_test_points)
+    print('user_result =', user_result)
+    # create object result, send to front and save in base

@@ -80,23 +80,23 @@ def save_answer(data):
         max_test_points += current_question.max_points
         # функція для простого питання
         if current_question.question_type.name == 'S':
-            point = 1
-            pass
-            # функція для простого питання
-            # if answer == question.correct_answer:
-            #     point = question.max_points
-            # else:
-            #     point = 0
+            # якщо відповідь користувача співпадає з записом в полі питання 'correct_answer'
+            if elem['answer'].strip() == current_question.correct_answer.strip():
+                point = current_question.max_points
+            else:
+                point = 0
         # функція для simple-choise питання
         elif current_question.question_type.name == 'SC':
-            point = 1
-            pass
-            # функція для simple-choise питання
-            # correct_answer = 'variant' + answer_variant.numbers_true
-            # if answer == answer_variant.serializable_value(correct_answer):
-            #     point = question.max_points
-            # else:
-            #     point = 0
+            current_answer_variants = answer_variants.get(id=current_question.answer_variants.id)
+            # current_answer_variants = current_question.answer_variants
+            print(current_answer_variants)
+            print(current_answer_variants.numbers_true)
+            correct_answer = 'variant' + current_answer_variants.numbers_true.strip()
+            # correct_answer = CORRECT_ANSWERS.correct_answer1
+            if elem['answer'] == current_answer_variants.serializable_value(correct_answer):
+                point = current_question.max_points
+            else:
+                point = 0
         # функція для multiple-choise питання
         elif current_question.question_type.name == 'MC':
             point = 1
@@ -107,12 +107,9 @@ def save_answer(data):
             pass
 
         user_result += point
-        table_entry = Answer(user_id=user, question_id=current_question, answer=elem['answer'], \
-                             answer_time=elem['answer_time'], point=point)
+        table_entry = Answer(user_id=user, question_id=current_question, answer=elem['answer'], answer_time=elem['answer_time'], point=point)
         # table_entry.save()
         print(table_entry.user_id, table_entry.question_id, table_entry.answer, table_entry.answer_time, table_entry.point)
-
-        # answer_variant = answer_variants.get(id=elem['question_id'])
 
     print('max_test_points =', max_test_points)
     print('user_result =', user_result)

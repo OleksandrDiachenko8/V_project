@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from test_app.serializers import QuestionsSerializer, ResultSerializer, TestedUserSerializer, AnswerSerializer
 from test_app.models import Question, Answer_variants, Result, TestedUser, Answer
-from test_app.logic import question, check_add_user, result_fit, saveAnswer
+from test_app.logic import question, check_add_user, save_answer
 
 
 # .../testing/
@@ -23,7 +23,7 @@ class Testing(APIView):
 class AnswerApi(APIView):
     def post(self, request):
         data = request.data
-        saveAnswer(data)
+        save_answer(data)
         # current_user = check_add_user(data)
         # data = question()
         # serializer = QuestionsSerializer(data, many=True)
@@ -65,7 +65,7 @@ class AnswerApiView(ModelViewSet):
     def post(self, request):
         print("1212121212")
         data = request.data
-        result_fit(data)
+
         # data = question()
         #
         # serializer = AnswerSerializer(data, many=True)   #???

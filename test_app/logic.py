@@ -19,7 +19,7 @@ def question():
                 k += 1
         return q_array
 
-    all_questions_list = Question.objects.all()
+    all_questions_list = Question.objects.all()    # all_questions in base
     questions_quantity = len(all_questions_list)   # всього питань
     test_quantity = 10                             # питань потрібно для теста
     # Визначення скільки питань кожного виду для тесту, поміняти як визначиться звідки брати дані
@@ -31,13 +31,12 @@ def question():
 
     # quantity - кількість питань кожного рівня
     quantity = [one_quantity, two_quantity, three_quantity, four_quantity, five_quantity]
-    # print(quantity) - видалити потім
 
+    # parsing question_list for test
     test_question_list = []
     for i in range(1, 6):
         test_question_list = test_question_list + question_choose(i, quantity[i-1])
 
-    print(test_question_list)
     return test_question_list
 
 
@@ -57,12 +56,9 @@ def check_add_user(data):
         return user.id
 
 
-def result_fit(data):
-    answer_block = data.objects.all()
-    print(answer_block)
+# save user answers and get result
+def save_answer(data):
 
-
-def saveAnswer(data):
     def check_answer(question, answer, answer_variant):
 
         if question.question_type.name == 'S':
@@ -83,17 +79,29 @@ def saveAnswer(data):
         else:
             pass
 
+    #                data
+    # [ {
+    #     "user_id": 9,
+    #     "question_id": 23,
+    #     "answer": "відповідь на це питання",
+    #     "answer_time": час в секундах
+    # },]
+
+    # витягуємо користувача через user_id from request after testing
     user = TestedUser.objects.get(id=data[0]['user_id'])
+    # змінні що будуть зберігати результат користувача за тест та максимально можливий за цей пул питань
+    user_result = 0
+    max_test_points = 0
+
     all_questions_list = Question.objects.all()
     answer_variants = Answer_variants.objects.all()
-    result = 0
-    max_result = 0
+
     for elem in data:
         question = all_questions_list.get(id=elem['question_id'])
         answer_variant = answer_variants.get(id=elem['question_id'])
         point = check_answer(question, elem['answer'], answer_variant)
-        result += point
-        max_result += question.max_points
+        user_result  += point
+        max_test_points += question.max_points
         b = Answer(user_id=user, question_id=question, answer=elem['answer'], answer_time=elem['answer_time'], point=point)
         print(b.point)
     print(result, max_result)

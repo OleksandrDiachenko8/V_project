@@ -2,7 +2,7 @@ from collections import OrderedDict
 from operator import itemgetter
 
 from rest_framework.serializers import ModelSerializer
-from test_app.models import Question, Answer_variants, Result, TestedUser, QuestionType, Answer
+from test_app.models import Question, Answer_variants, Result, TestedUser, QuestionType, Answer, Correct_answers
 
 
 class QuestionsTypeSerializer(ModelSerializer):
@@ -23,6 +23,18 @@ class AnswerVariantsSerializer(ModelSerializer):
         return ret
 
 
+class Correct_answersSerializer(ModelSerializer):
+    class Meta:
+        model = Correct_answers
+        fields = ('correct_answer1', 'correct_answer2', 'correct_answer3', 'correct_answer4', 'correct_answer5',)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        # filter the null values and creates a new dictionary
+        ret = OrderedDict(filter(itemgetter(1), ret.items()))
+        return ret
+
+
 class TestedUserSerializer(ModelSerializer):
     class Meta:
         model = TestedUser
@@ -32,7 +44,7 @@ class TestedUserSerializer(ModelSerializer):
 # used
 class QuestionsSerializer(ModelSerializer):
     answer_variants = AnswerVariantsSerializer()
-    #question_type = QuestionsTypeSerializer()
+    # correct_answers = Correct_answersSerializer()
 
     class Meta:
         model = Question
@@ -52,4 +64,3 @@ class AnswerSerializer(ModelSerializer):
     class Meta:
         model = Answer
         fields = ('user_id', 'question_id', 'answer', 'answer_time')
-

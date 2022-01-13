@@ -1,6 +1,6 @@
 import math
 import random
-from test_app.models import Question, TestedUser, Answer, Answer_variants, QuestionType
+from test_app.models import Question, TestedUser, Answer, Answer_variants
 
 
 # функція вибірки питань
@@ -99,6 +99,7 @@ def save_answer(data):
                 point = 0
         # функція для multiple-choise питання
         elif current_question.question_type.name == 'MC':
+
             point = 1
             pass
         # функція для grids питання

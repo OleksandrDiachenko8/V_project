@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'work_space_1.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'server_base',
+        'NAME': 'server_base1',
         'USER': 'server',
         'PASSWORD': 'pass',
         'HOST': 'localhost',  # Set to empty string for localhost.

@@ -1,10 +1,9 @@
 import math
 import random
-from test_app.models import Question, TestedUser, Answer, Answer_variants
+from test_app.models import Question, TestedUser, Answer, Answer_variants, Correct_answers, Result
 
 
 # функція вибірки питань
-
 def question():
     def question_choose(difficulty, quantity):
         k = 0
@@ -43,7 +42,7 @@ def question():
 # функція перевірки існування користувача в базі та запису його до неї
 def check_add_user(data):
     # витягуємо email з запросу
-    user_mail = data['email']
+    user_mail = data['email'].strip().lower()
     # шукаємо в базі юзера з таким email
     users_check = TestedUser.objects.all().filter(email=user_mail)
     if len(users_check) > 0:
@@ -62,9 +61,18 @@ def save_answer(data):
     # [ {
     #     "user_id": 9,
     #     "question_id": 23,
-    #     "answer": "відповідь на це питання, відповідь2 на це питання"
+    #     "answer": ""
     #     "answer_time": [час в секундах]
     # },]
+
+
+    def get_correct_answers(object):
+        model = ['correct_answer1', 'correct_answer2', 'correct_answer3', 'correct_answer4', 'correct_answer5']
+        caList = []
+        for i in range(0, 5):
+            if len(object.serializable_value(model[i])) > 0:
+                caList.append(object.serializable_value(model[i]))
+        return caList
 
     # витягуємо користувача через user_id from request after testing
     user = TestedUser.objects.get(id=data[0]['user_id'])
@@ -73,45 +81,69 @@ def save_answer(data):
     max_test_points = 0
 
     all_questions_list = Question.objects.all()
-    answer_variants = Answer_variants.objects.all()
+    correct_answers = Correct_answers.objects.all()
 
     for elem in data:
         current_question = all_questions_list.get(id=elem['question_id'])  # вибираєм питання по id from request
         max_test_points += current_question.max_points
         # функція для простого питання
-        if current_question.question_type.name == 'S':
+        if current_question.question_type.name == 'S' or current_question.question_type.name == 'SC':
             # якщо відповідь користувача співпадає з записом в полі питання 'correct_answer'
-            if elem['answer'].strip() == current_question.correct_answer.strip():
+            current_correct_answers = correct_answers.get(id=current_question.correct_answers.id)
+            current_correct_answer = current_correct_answers.correct_answer1
+            if elem['answer'].strip() == current_correct_answer.strip():
                 point = current_question.max_points
             else:
                 point = 0
+            print(point)
         # функція для simple-choise питання
-        elif current_question.question_type.name == 'SC':
-            current_answer_variants = answer_variants.get(id=current_question.answer_variants.id)
-            # current_answer_variants = current_question.answer_variants
-            print(current_answer_variants)
-            print(current_answer_variants.numbers_true)
-            correct_answer = 'variant' + current_answer_variants.numbers_true.strip()
-            # correct_answer = CORRECT_ANSWERS.correct_answer1
-            if elem['answer'] == current_answer_variants.serializable_value(correct_answer):
-                point = current_question.max_points
-            else:
-                point = 0
+        # elif current_question.question_type.name == 'SC':
+        #     current_answer_variants = answer_variants.get(id=current_question.answer_variants.id)
+        #     # current_answer_variants = current_question.answer_variants
+        #     print(current_answer_variants)
+        #     print(current_answer_variants.numbers_true)
+        #     correct_answer = 'variant' + current_answer_variants.numbers_true.strip()
+        #     # correct_answer = CORRECT_ANSWERS.correct_answer1
+        #     if elem['answer'] == current_answer_variants.serializable_value(correct_answer):
+        #         point = current_question.max_points
+        #     else:
+        #         point = 0
         # функція для multiple-choise питання
         elif current_question.question_type.name == 'MC':
+            current_correct_answers = correct_answers.get(id=current_question.correct_answers.id)
+            current_correct_answers_list = get_correct_answers(current_correct_answers)
+            user_answers = []
+            for prop in elem['answer']:
+                user_answers.append(elem['answer'][prop])
+            print(user_answers)
+            print(current_correct_answers_list)
+            current_correct_answers_list.sort()
+            user_answers.sort()
+            if user_answers == current_correct_answers_list:
+                point = current_question.max_points
+            else:
+                point = 0
 
-            point = 1
-            pass
         # функція для grids питання
         else:
-            point = 1
+            point = 0
             pass
 
         user_result += point
-        table_entry = Answer(user_id=user, question_id=current_question, answer=elem['answer'], answer_time=elem['answer_time'], point=point)
-        # table_entry.save()
-        print(table_entry.user_id, table_entry.question_id, table_entry.answer, table_entry.answer_time, table_entry.point)
+        table_entry = Answer(user_id=user, question_id=current_question, answer=user_answers, answer_time=elem['answer_time'], point=point)
+        table_entry.save()
 
     print('max_test_points =', max_test_points)
     print('user_result =', user_result)
-    # create object result, send to front and save in base
+    persent = int ((user_result * 100 / max_test_points) * 100) / 100
+    print('procent', persent)
+
+    result = Result(user_id=user, points=user_result, persent=persent)
+    result.save()
+    result_dict = {'user_id': data[0]['user_id'], 'test': '', 'points': user_result, 'persent': persent}
+
+    return result_dict
+
+
+def save_result(data):
+    pass

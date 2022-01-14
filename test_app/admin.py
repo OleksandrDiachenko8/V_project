@@ -58,7 +58,7 @@ admin.site.register(Answer, Answers)
 
 
 class Results(admin.ModelAdmin):
-    list_display = ('user_id', 'test', 'points')
+    list_display = ('user_id', 'test', 'points', 'persent')
 
 
 admin.site.register(Result, Results)

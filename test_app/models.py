@@ -106,7 +106,7 @@ class TestedUser(models.Model):
 class Answer(models.Model):
     user_id = models.ForeignKey(TestedUser, on_delete=models.CASCADE)
     question_id = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
-    answer = models.CharField(max_length=40, blank=True)
+    answer = models.TextField(blank=True)
     answer_time = models.IntegerField(blank=True)
     point = models.IntegerField(blank=True)
 
@@ -119,6 +119,8 @@ class Result(models.Model):
     user_id = models.ForeignKey(TestedUser, on_delete=models.CASCADE)
     test = models.ForeignKey(Test, on_delete=models.SET_NULL, blank=True, null=True)
     points = models.IntegerField(blank=True)
+    persent = models.DecimalField(max_digits=5, decimal_places=2)
+
 
     class Meta:
         verbose_name = 'Результат тесту'

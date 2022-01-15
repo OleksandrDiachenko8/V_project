@@ -31,7 +31,6 @@ urlpatterns = [
     # path('api-auth/', include('rest_framework.urls')),
     path('testing/', views.Testing.as_view()),
     path('answer/', views.AnswerApi.as_view()),
-   # path('answer/', views.AnswerApiView.as_view()),
 ]
 
 urlpatterns += router.urls

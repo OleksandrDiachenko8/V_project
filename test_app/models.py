@@ -4,15 +4,16 @@ from django.db import models
 # Модель що описує існуючі тести
 class Test(models.Model):
     name = models.CharField('Назва тесту', max_length=50)
-    quantity_questions = models.PositiveSmallIntegerField('Кількість питань')
+    quantity_questions = models.PositiveSmallIntegerField('Кількість питань', help_text='Скільки питань видавати для тесту?')
     time_for_test = models.PositiveSmallIntegerField('Час тесту', default=60, help_text='Час тесту в хвилинах')
+    is_active = models.BooleanField()
 
     class Meta:
-        verbose_name = 'Тест'
-        verbose_name_plural = 'Тести'
+        verbose_name = 'Test'
+        verbose_name_plural = 'Tests'
 
     def __str__(self):
-        return f'Id {self.id}: {self.name}'
+        return f'{self.name}'
 
 
 # Модель що описує можливі типи питань (коротка відповідь, одиночний та множинний вибір, вставка пропусків)
@@ -22,20 +23,20 @@ class QuestionType(models.Model):
     Multiple = 'MC'
     Grid = 'G'
     QUESTION_TYPE_CHOICES = [
-        (Short, 'Коротка відповідь'),
+        (Short, 'Вписати відповідь'),
         (Single, 'Одиночний вибір'),
         (Multiple, 'Множинний вибір'),
         (Grid, 'Grid'),
     ]
-    name = models.CharField('Тип питання', max_length=2, choices=QUESTION_TYPE_CHOICES, default=Short)
+    name = models.CharField('Тип питання', max_length=2, choices=QUESTION_TYPE_CHOICES, default=Short, unique=True)
     description = models.TextField('Опис', blank=True)
 
     class Meta:
-        verbose_name = 'Тип питання'
-        verbose_name_plural = 'Типи питань'
+        verbose_name = 'Question type'
+        verbose_name_plural = 'Question type'
 
     def __str__(self):
-        return self.name
+        return self.description
 
 
 # Модель що описує відповіді на питання
@@ -68,11 +69,11 @@ class Correct_answers(models.Model):
         verbose_name_plural = 'Правильні відповіді'
 
     def __str__(self):
-        return f'Id {self.id}'
+        return f'Id {self.id}. 1: {self.correct_answer1}'
 
 
 class Question(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.SET_NULL, blank=True, null=True)
+    test = models.ForeignKey(Test, on_delete=models.PROTECT, blank=True)
     question_type = models.ForeignKey(QuestionType, on_delete=models.PROTECT)
     question_text = models.TextField()
     question_image = models.ImageField(upload_to=None, blank=True)
@@ -81,8 +82,8 @@ class Question(models.Model):
     answer_variants = models.OneToOneField(Answer_variants, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
-        verbose_name = 'Питання'
-        verbose_name_plural = 'Питання'
+        verbose_name = 'Question'
+        verbose_name_plural = 'Questions'
 
     def __str__(self):
         return f'Id {self.id}: {self.question_text}'
@@ -112,14 +113,14 @@ class Answer(models.Model):
 
     class Meta:
         verbose_name = 'Відповідь користувача'
-        verbose_name_plural = 'Відповіді користувача'
+        verbose_name_plural = 'Відповіді користувачів'
 
 
 class Result(models.Model):
     user_id = models.ForeignKey(TestedUser, on_delete=models.CASCADE)
-    test = models.ForeignKey(Test, on_delete=models.SET_NULL, blank=True, null=True)
+    test = models.ForeignKey(Test, on_delete=models.PROTECT, blank=True)
     points = models.IntegerField(blank=True)
-    persent = models.DecimalField(max_digits=5, decimal_places=2)
+    percent = models.DecimalField(max_digits=4, decimal_places=1)
 
 
     class Meta:
@@ -127,4 +128,4 @@ class Result(models.Model):
         verbose_name_plural = 'Результати тесту'
 
     def __str__(self):
-        return f'{self.user_id}-{self.points}'
+        return f'{self.user_id} - {self.points}'

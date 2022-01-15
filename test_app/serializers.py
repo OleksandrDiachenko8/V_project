@@ -44,7 +44,6 @@ class TestedUserSerializer(ModelSerializer):
 # used
 class QuestionsSerializer(ModelSerializer):
     answer_variants = AnswerVariantsSerializer()
-    # correct_answers = Correct_answersSerializer()
 
     class Meta:
         model = Question
@@ -56,7 +55,7 @@ class ResultSerializer(ModelSerializer):
 
     class Meta:
         model = Result
-        fields = ('user_id', 'test', 'points', 'persent',)
+        fields = ('user_id', 'test', 'points', 'percent',)
 
 
 class AnswerSerializer(ModelSerializer):

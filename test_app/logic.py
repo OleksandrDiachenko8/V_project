@@ -1,6 +1,6 @@
 import math
 import random
-from test_app.models import Question, TestedUser, Answer, Answer_variants, Correct_answers, Result
+from test_app.models import Question, TestedUser, Answer, Correct_answers, Result, Test
 
 
 # функція вибірки питань
@@ -14,27 +14,40 @@ def question():
             if elem in q_array:
                 pass
             else:
+                # if bool(elem.question_image) != 0:
+                #     print(elem.question_image.path)
+                #     elem.question_image = elem.question_image.path
                 q_array.append(elem)
                 k += 1
         return q_array
 
-    all_questions_list = Question.objects.all()    # all_questions in base
-    questions_quantity = len(all_questions_list)   # всього питань
-    test_quantity = 10                             # питань потрібно для теста
-    # Визначення скільки питань кожного виду для тесту, поміняти як визначиться звідки брати дані
-    five_quantity = math.ceil(len(all_questions_list.filter(max_points=5)) * test_quantity / questions_quantity)
-    four_quantity = round(len(all_questions_list.filter(max_points=4)) * test_quantity / questions_quantity)
-    three_quantity = round(len(all_questions_list.filter(max_points=3)) * test_quantity / questions_quantity)
-    two_quantity = round(len(all_questions_list.filter(max_points=2)) * test_quantity / questions_quantity)
-    one_quantity = test_quantity - five_quantity - four_quantity - three_quantity - two_quantity
+    current_test = Test.objects.filter(is_active=True)[0]
 
-    # quantity - кількість питань кожного рівня
-    quantity = [one_quantity, two_quantity, three_quantity, four_quantity, five_quantity]
+    # all_questions in base
+    all_questions_list = Question.objects.all()
+    # only_questions in this test
+    # all_questions_list = Question.objects.filter(test=current_test)
 
-    # parsing question_list for test
-    test_question_list = []
-    for i in range(1, 6):
-        test_question_list = test_question_list + question_choose(i, quantity[i-1])
+    questions_quantity = len(all_questions_list)      # всього питань
+    test_quantity = current_test.quantity_questions   # питань потрібно для теста
+
+    if test_quantity <= questions_quantity:
+        # Визначення скільки питань кожного виду для тесту, поміняти як визначиться звідки брати дані
+        five_quantity = math.ceil(len(all_questions_list.filter(max_points=5)) * test_quantity / questions_quantity)
+        four_quantity = round(len(all_questions_list.filter(max_points=4)) * test_quantity / questions_quantity)
+        three_quantity = round(len(all_questions_list.filter(max_points=3)) * test_quantity / questions_quantity)
+        two_quantity = round(len(all_questions_list.filter(max_points=2)) * test_quantity / questions_quantity)
+        one_quantity = test_quantity - five_quantity - four_quantity - three_quantity - two_quantity
+
+        # quantity - кількість питань кожного рівня
+        quantity = [one_quantity, two_quantity, three_quantity, four_quantity, five_quantity]
+
+        # parsing question_list for test
+        test_question_list = []
+        for i in range(1, 6):
+            test_question_list = test_question_list + question_choose(i, quantity[i-1])
+    else:
+        test_question_list = []
 
     return test_question_list
 
@@ -61,18 +74,16 @@ def save_answer(data):
     # [ {
     #     "user_id": 9,
     #     "question_id": 23,
-    #     "answer": ""
+    #     "answer": {},
     #     "answer_time": [час в секундах]
     # },]
-
-
-    def get_correct_answers(object):
+    def get_correct_answers(obj):
         model = ['correct_answer1', 'correct_answer2', 'correct_answer3', 'correct_answer4', 'correct_answer5']
-        caList = []
+        ca_list = []
         for i in range(0, 5):
-            if len(object.serializable_value(model[i])) > 0:
-                caList.append(object.serializable_value(model[i]))
-        return caList
+            if len(obj.serializable_value(model[i])) > 0:
+                ca_list.append(obj.serializable_value(model[i]))
+        return ca_list
 
     # витягуємо користувача через user_id from request after testing
     user = TestedUser.objects.get(id=data[0]['user_id'])
@@ -84,14 +95,15 @@ def save_answer(data):
     correct_answers = Correct_answers.objects.all()
 
     for elem in data:
-        current_question = all_questions_list.get(id=elem['question_id'])  # вибираєм питання по id from request
+        current_question = all_questions_list.get(id=elem['question_id'])  # вибираєм питання по id_from_request
         max_test_points += current_question.max_points
         # функція для простого питання
         if current_question.question_type.name == 'S' or current_question.question_type.name == 'SC':
+            user_answers = [elem['answer']]
             # якщо відповідь користувача співпадає з записом в полі питання 'correct_answer'
             current_correct_answers = correct_answers.get(id=current_question.correct_answers.id)
             current_correct_answer = current_correct_answers.correct_answer1
-            if elem['answer'].strip() == current_correct_answer.strip():
+            if elem['answer'].strip().lower() == current_correct_answer.strip().lower():
                 point = current_question.max_points
             else:
                 point = 0
@@ -115,8 +127,6 @@ def save_answer(data):
             user_answers = []
             for prop in elem['answer']:
                 user_answers.append(elem['answer'][prop])
-            print(user_answers)
-            print(current_correct_answers_list)
             current_correct_answers_list.sort()
             user_answers.sort()
             if user_answers == current_correct_answers_list:
@@ -133,17 +143,20 @@ def save_answer(data):
         table_entry = Answer(user_id=user, question_id=current_question, answer=user_answers, answer_time=elem['answer_time'], point=point)
         table_entry.save()
 
+    percent = int((user_result * 100 / max_test_points) * 100) / 100
     print('max_test_points =', max_test_points)
     print('user_result =', user_result)
-    persent = int ((user_result * 100 / max_test_points) * 100) / 100
-    print('procent', persent)
+    print('percent =', percent)
+    curr_test = Test.objects.filter(is_active=True)[0]
+    print(curr_test)
 
-    result = Result(user_id=user, points=user_result, persent=persent)
+    result = Result(user_id=user, points=user_result, percent=percent, test=curr_test)
     result.save()
-    result_dict = {'user_id': data[0]['user_id'], 'test': '', 'points': user_result, 'persent': persent}
-
+    result_dict = {'user_id': data[0]['user_id'], 'points': user_result, 'percent': percent}
     return result_dict
 
 
-def save_result(data):
-    pass
+def get_test_time():
+    current_test = Test.objects.filter(is_active=True)[0]
+    current_test_time = current_test.time_for_test
+    return current_test_time

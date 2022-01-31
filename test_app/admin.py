@@ -2,36 +2,53 @@ from django.contrib import admin
 from test_app.models import *
 
 
-class Test(admin.ModelAdmin):
-    list_display = ('name', 'quantity_questions', 'time_for_test')
-    list_display_links = ('quantity_questions', 'time_for_test')
-
-
-admin.site.register(Tests, Test)
-
-
-class Question_a(admin.ModelAdmin):
-    list_display = ('question_text', 'test', 'max_points', 'correct_answer', 'answer_variants', 'question_type')
-    list_display_links = ('question_text', 'test', 'max_points', 'answer_variants')
+class Questions(admin.ModelAdmin):
+    list_display = ('test', 'question_type', 'question_text', 'max_points', 'answer_variants', 'correct_answers')
+    list_display_links = ('question_text', 'test', 'max_points', 'answer_variants', 'correct_answers')
     search_fields = ('question_text', )
+    list_filter = ("test", 'question_type')
 
 
-admin.site.register(Question, Question_a)
+admin.site.register(Question, Questions)
 
 
-class Question_t(admin.ModelAdmin):
-    list_display = ('name',)
+class Tests(admin.ModelAdmin):
+    list_display = ('name', 'quantity_questions', 'time_for_test', 'is_active')
+    list_display_links = ('name',)
 
 
-admin.site.register(QuestionType, Question_t)
+admin.site.register(Test, Tests)
 
+
+#  Для показу та додавання питань іншого типу в адмінці
+# ======================================================
+# class Question_t(admin.ModelAdmin):
+#     list_display = ('name',)
+#
+#
+# admin.site.register(QuestionType, Question_t)
+# ======================================================
 
 class AnswerVariants(admin.ModelAdmin):
-    list_display = ('numbers_true', 'variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6')
-    search_fields = ('variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6',)
+    list_display = ('que_id', 'variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6',)
+    search_fields = ('variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6')
+
+    def que_id(self, obj):
+        result = Question.objects.get(answer_variants=obj)
+        return result.id
+
+    que_id.short_description = "Пит. id"
 
 
 admin.site.register(Answer_variants, AnswerVariants)
+
+
+class CorrectAnswers(admin.ModelAdmin):
+    list_display = ('correct_answer1', 'correct_answer2', 'correct_answer3', 'correct_answer4', 'correct_answer5')
+    search_fields = ('correct_answer1', 'correct_answer2', 'correct_answer3', 'correct_answer4', 'correct_answer5')
+
+
+admin.site.register(Correct_answers, CorrectAnswers)
 
 
 class Testeduser(admin.ModelAdmin):
@@ -49,12 +66,8 @@ class Answers(admin.ModelAdmin):
 admin.site.register(Answer, Answers)
 
 
-# class Result(admin.ModelAdmin):
-#     list_display = ('user_id', 'points')
-#
-#
-# admin.site.register(Result, Result)
+class Results(admin.ModelAdmin):
+    list_display = ('user_id', 'test', 'points', 'percent')
 
 
-
-
+admin.site.register(Result, Results)

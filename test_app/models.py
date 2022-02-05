@@ -7,6 +7,8 @@ class Test(models.Model):
     quantity_questions = models.PositiveSmallIntegerField('Кількість питань', help_text='Скільки питань видавати для тесту?')
     time_for_test = models.PositiveSmallIntegerField('Час тесту', default=60, help_text='Час тесту в хвилинах')
     is_active = models.BooleanField()
+    description = models.TextField(help_text='Інформація для користувача', blank=True)
+    by_text = models.TextField(help_text='Для виводу по закінченню тесту', blank=True)
 
     class Meta:
         verbose_name = 'Test'

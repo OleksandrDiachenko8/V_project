@@ -59,12 +59,21 @@ def check_add_user(data):
         print('user already exists!!')
         # return users_check[0].id
         return None
-
     else:
         # додаємо в базу
         user = TestedUser(first_name=data['first_name'], last_name=data['last_name'], email=user_mail)
         user.save()
         return user.id
+
+
+# функція отримання інформації про поточний тест в базі
+def get_test_info():
+    current_test = Test.objects.filter(is_active=True)[0]
+    current_test_time = current_test.time_for_test
+    current_test_info = current_test.description
+    current_test_by = current_test.by_text
+    return current_test_time, current_test_info, current_test_by
+
 
 
 # save user answers and get result
@@ -156,10 +165,7 @@ def save_answer(data):
     return result_dict
 
 
-def get_test_time():
-    current_test = Test.objects.filter(is_active=True)[0]
-    current_test_time = current_test.time_for_test
-    return current_test_time
+
 
 # def write_q():
 

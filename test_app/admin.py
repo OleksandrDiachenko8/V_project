@@ -1,5 +1,8 @@
 from django.contrib import admin
 from test_app.models import *
+from django.contrib.auth.models import Group
+
+admin.site.unregister(Group)
 
 
 class Questions(admin.ModelAdmin):

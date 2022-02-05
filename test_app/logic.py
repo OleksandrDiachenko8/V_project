@@ -1,6 +1,6 @@
 import math
 import random
-from test_app.models import Question, TestedUser, Answer, Correct_answers, Result, Test
+from test_app.models import Question, TestedUser, Answer, Correct_answers, Result, Test, QuestionType
 
 
 # функція вибірки питань
@@ -160,3 +160,50 @@ def get_test_time():
     current_test = Test.objects.filter(is_active=True)[0]
     current_test_time = current_test.time_for_test
     return current_test_time
+
+
+def write_q():
+
+    def read():
+        # получим объект файла
+        file1 = open("C:\sample.txt", "r")
+        while True:
+            # считываем строку
+            line = file1.readline()
+            if not line:
+                break
+            type_in_file = line.strip()
+            line = file1.readline()
+            text_in_file = line.strip()
+            line = file1.readline()
+            ca1 = line.strip()
+            line = file1.readline()
+            ca2 = line.strip()
+            line = file1.readline()
+            ca3 = line.strip()
+            line = file1.readline()
+            ca4 = line.strip()
+            type = QuestionType.objects.filter(name=type_in_file)[0]
+            current_test = Test.objects.all()[0]
+            ca = Correct_answers(correct_answer1=ca1, correct_answer2=ca2, correct_answer3=ca3, correct_answer4=ca4)
+            ca.save()
+            max_points = random.randrange(0, 6)
+            add_question = Question(test=current_test, question_type=type, question_text=text_in_file, max_points=max_points, correct_answers=ca)
+            add_question.save()
+
+        file1.close
+    read()
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return

@@ -18,7 +18,7 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
 from test_app import views  # ??????
-from test_app.views import print_questions, ResultApiView, TestedUserApiView, AnswerApiView, AnswerApi
+from test_app.views import print_questions, ResultApiView, TestedUserApiView, AnswerApi
 
 router = SimpleRouter()
 router.register(r'user', TestedUserApiView)

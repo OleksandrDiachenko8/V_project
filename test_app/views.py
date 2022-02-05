@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from test_app.serializers import QuestionsSerializer, ResultSerializer, TestedUserSerializer, AnswerSerializer
 from test_app.models import Question, Answer_variants, Result, TestedUser, Answer
-from test_app.logic import question, check_add_user, save_answer, get_test_time
+from test_app.logic import question, check_add_user, save_answer, get_test_time, write_q
 
 
 # .../testing/        user info ----> D --> questions pool
@@ -36,6 +36,7 @@ class AnswerApi(APIView):
 
 
 def print_questions(request):
+    write_q()
     return render(request, 'index.html', {'questions': Question.objects.all(),
                                           'variants': Answer_variants.objects.all()
                                           })
@@ -49,32 +50,3 @@ class ResultApiView(ModelViewSet):
 class TestedUserApiView(ModelViewSet):
     queryset = TestedUser.objects.all()
     serializer_class = TestedUserSerializer
-
-
-class AnswerApiView(ModelViewSet):
-    def get_serializer(self, *args, **kwargs):
-        if "data" in kwargs:
-            data = kwargs["data"]
-
-            # check if many is required
-            if isinstance(data, list):
-                kwargs["many"] = True
-
-        return super(AnswerApiView, self).get_serializer(*args, **kwargs)
-
-    def post(self, request):
-        print("1212121212")
-        data = request.data
-
-        # data = question()
-        #
-        # serializer = AnswerSerializer(data, many=True)   #???
-        # print(serializer.data)
-        # return Response(status=201, data=serializer.data)
-
-    queryset = Answer.objects.all()
-    serializer_class = AnswerSerializer
-
-
-
-

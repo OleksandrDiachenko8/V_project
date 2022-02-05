@@ -57,7 +57,9 @@ def check_add_user(data):
     users_check = TestedUser.objects.all().filter(email=user_mail)
     if len(users_check) > 0:
         print('user already exists!!')
-        return users_check[0].id
+        # return users_check[0].id
+        return None
+
     else:
         # додаємо в базу
         user = TestedUser(first_name=data['first_name'], last_name=data['last_name'], email=user_mail)

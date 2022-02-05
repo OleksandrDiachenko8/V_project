@@ -13,11 +13,15 @@ class Testing(APIView):
         data = request.data
         current_test = get_test_time()
         current_user = check_add_user(data)
-        data = question()
-        serializer = QuestionsSerializer(data, many=True)
-        response_data = serializer.data
-        response_data.insert(0, {'user_id': current_user, 'time_for_test': current_test})
-        return Response(status=201, data=response_data)
+        if current_user is None:
+            response_data = {'user_id': -1, 'info': 'user already exists!!'}
+            return Response(status=202, data=response_data)
+        else:
+            data = question()
+            serializer = QuestionsSerializer(data, many=True)
+            response_data = serializer.data
+            response_data.insert(0, {'user_id': current_user, 'time_for_test': current_test})
+            return Response(status=201, data=response_data)
 
 
 # .../answers and result/    user answers ----> D save --> result

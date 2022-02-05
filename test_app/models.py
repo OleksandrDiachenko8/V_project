@@ -49,8 +49,8 @@ class Answer_variants(models.Model):
     variant6 = models.CharField('Варiант 6', max_length=100, blank=True, help_text='при наявності')
 
     class Meta:
-        verbose_name = 'Варiанти відповіді'
-        verbose_name_plural = 'Варiанти відповіді'
+        verbose_name = 'Answer variants'
+        verbose_name_plural = 'Answer variants'
 
     def __str__(self):
         return f'Id {self.id}'
@@ -65,11 +65,11 @@ class Correct_answers(models.Model):
     correct_answer5 = models.CharField('Правильна відповідь 5', max_length=100, blank=True, help_text='при наявності')
 
     class Meta:
-        verbose_name = 'Правильна відповідь'
-        verbose_name_plural = 'Правильні відповіді'
+        verbose_name = 'correct answer'
+        verbose_name_plural = 'correct answers'
 
     def __str__(self):
-        return f'Id {self.id}. 1: {self.correct_answer1}'
+        return f'Id {self.id}. {self.correct_answer1}'
 
 
 class Question(models.Model):

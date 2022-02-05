@@ -28,13 +28,6 @@ class Correct_answersSerializer(ModelSerializer):
         model = Correct_answers
         fields = ('correct_answer1', 'correct_answer2', 'correct_answer3', 'correct_answer4', 'correct_answer5',)
 
-    # def to_representation(self, instance):
-    #     ret = super().to_representation(instance)
-    #     # filter the null values and creates a new dictionary
-    #     ret = OrderedDict(filter(itemgetter(1), ret.items()))
-    #     return ret
-
-
 class TestedUserSerializer(ModelSerializer):
     class Meta:
         model = TestedUser
@@ -63,3 +56,4 @@ class AnswerSerializer(ModelSerializer):
     class Meta:
         model = Answer
         fields = ('user_id', 'question_id', 'answer', 'answer_time')
+

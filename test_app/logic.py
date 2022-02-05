@@ -1,6 +1,6 @@
 import math
 import random
-from test_app.models import Question, TestedUser, Answer, Correct_answers, Result, Test, QuestionType
+from test_app.models import Question, TestedUser, Answer, Correct_answers, Result, Test, QuestionType, Answer_variants
 
 
 # функція вибірки питань
@@ -14,9 +14,6 @@ def question():
             if elem in q_array:
                 pass
             else:
-                # if bool(elem.question_image) != 0:
-                #     print(elem.question_image.path)
-                #     elem.question_image = elem.question_image.path
                 q_array.append(elem)
                 k += 1
         return q_array
@@ -24,9 +21,9 @@ def question():
     current_test = Test.objects.filter(is_active=True)[0]
 
     # all_questions in base
-    all_questions_list = Question.objects.all()
+    # all_questions_list = Question.objects.all()
     # only_questions in this test
-    # all_questions_list = Question.objects.filter(test=current_test)
+    all_questions_list = Question.objects.filter(test=current_test)
 
     questions_quantity = len(all_questions_list)      # всього питань
     test_quantity = current_test.quantity_questions   # питань потрібно для теста
@@ -139,16 +136,17 @@ def save_answer(data):
             point = 0
             pass
 
+        answer_t=round(elem['answer_time']/1000)
+
         user_result += point
-        table_entry = Answer(user_id=user, question_id=current_question, answer=user_answers, answer_time=elem['answer_time'], point=point)
+        table_entry = Answer(user_id=user, question_id=current_question, answer=user_answers, answer_time=answer_t, point=point)
         table_entry.save()
 
     percent = int((user_result * 100 / max_test_points) * 100) / 100
-    print('max_test_points =', max_test_points)
-    print('user_result =', user_result)
-    print('percent =', percent)
+    # print('max_test_points =', max_test_points)
+    # print('user_result =', user_result)
+    # print('percent =', percent)
     curr_test = Test.objects.filter(is_active=True)[0]
-    print(curr_test)
 
     result = Result(user_id=user, points=user_result, percent=percent, test=curr_test)
     result.save()
@@ -161,49 +159,51 @@ def get_test_time():
     current_test_time = current_test.time_for_test
     return current_test_time
 
+# def write_q():
 
-def write_q():
+#     def read():
+#         # получим объект файла
+#         file1 = open("/home/AlexDko/alexdko.pythonanywhere.com/sample.txt", "r")
+#         while True:
+#             ca5 =''
+#             ca4 =''
+#             ca3 =''
+#             ca2 =''
+#             # считываем строку
+#             line = file1.readline()
+#             if not line:
+#                 break
+#             type_in_file = line.strip()
+#             line = file1.readline()
+#             text_in_file = line.strip()
+#             line = file1.readline()
+#             ca1 = line.strip()
+#             #line = file1.readline()
+#             # ca2 = line.strip()
+#             # line = file1.readline()
+#             # ca3 = line.strip()
+#             # line = file1.readline()
+#             # ca4 = line.strip()
+#             # av1 = line.strip()
+#             # line = file1.readline()
+#             # av2 = line.strip()
+#             # line = file1.readline()
+#             # av3 = line.strip()
+#             # line = file1.readline()
+#             # av4 = line.strip()
+#             # line = file1.readline()
+#             # av5 = line.strip()
+#             # line = file1.readline()
+#             # av6 = line.strip()
+#             type = QuestionType.objects.filter(name=type_in_file)[0]
+#             current_test = Test.objects.all()[0]
+#             ca = Correct_answers(correct_answer1=ca1, correct_answer2=ca2, correct_answer3=ca3, correct_answer4='')
+#             ca.save()
+#             # av = Answer_variants(variant1=av1, variant2=av2, variant3=av3, variant4=av4, variant5=av5, variant6=av6)
+#             # av.save()
+#             max_points = random.randrange(1, 6)
+#             add_question = Question(test=current_test, question_type=type, question_text=text_in_file, max_points=max_points, correct_answers=ca)
+#             add_question.save()
 
-    def read():
-        # получим объект файла
-        file1 = open("C:\sample.txt", "r")
-        while True:
-            # считываем строку
-            line = file1.readline()
-            if not line:
-                break
-            type_in_file = line.strip()
-            line = file1.readline()
-            text_in_file = line.strip()
-            line = file1.readline()
-            ca1 = line.strip()
-            line = file1.readline()
-            ca2 = line.strip()
-            line = file1.readline()
-            ca3 = line.strip()
-            line = file1.readline()
-            ca4 = line.strip()
-            type = QuestionType.objects.filter(name=type_in_file)[0]
-            current_test = Test.objects.all()[0]
-            ca = Correct_answers(correct_answer1=ca1, correct_answer2=ca2, correct_answer3=ca3, correct_answer4=ca4)
-            ca.save()
-            max_points = random.randrange(0, 6)
-            add_question = Question(test=current_test, question_type=type, question_text=text_in_file, max_points=max_points, correct_answers=ca)
-            add_question.save()
-
-        file1.close
-    read()
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return
+#         file1.close
+#     read()

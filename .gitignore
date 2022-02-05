@@ -1,3 +1,4 @@
 ﻿media/
 .idea/
 new_project_venv/
+__pycache__

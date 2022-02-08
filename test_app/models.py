@@ -61,10 +61,10 @@ class Answer_variants(models.Model):
 # Модель що описує відповіді на питання
 class Correct_answers(models.Model):
     correct_answer1 = models.CharField('Правильна відповідь 1', max_length=100, help_text='Основна відповідь')
-    correct_answer2 = models.CharField('Правильна відповідь 2', max_length=100, blank=True, help_text='при наявності')
-    correct_answer3 = models.CharField('Правильна відповідь 3', max_length=100, blank=True, help_text='при наявності')
-    correct_answer4 = models.CharField('Правильна відповідь 4', max_length=100, blank=True, help_text='при наявності')
-    correct_answer5 = models.CharField('Правильна відповідь 5', max_length=100, blank=True, help_text='при наявності')
+    correct_answer2 = models.CharField('Правильна відповідь 2', max_length=100, blank=True, help_text='при наявності', null=True)
+    correct_answer3 = models.CharField('Правильна відповідь 3', max_length=100, blank=True, help_text='при наявності', null=True)
+    correct_answer4 = models.CharField('Правильна відповідь 4', max_length=100, blank=True, help_text='при наявності', null=True)
+    correct_answer5 = models.CharField('Правильна відповідь 5', max_length=100, blank=True, help_text='при наявності', null=True)
 
     class Meta:
         verbose_name = 'correct answer'
@@ -87,6 +87,7 @@ class Question(models.Model):
         verbose_name = 'Question'
         verbose_name_plural = 'Questions'
 
+
     def __str__(self):
         return f'Id {self.id}: {self.question_text}'
 
@@ -104,6 +105,8 @@ class TestedUser(models.Model):
 
     def __str__(self):
         return f'Id {self.id}: {self.email}'
+
+    # return f'Id {self.id}: {self.email}'
 
 
 class Answer(models.Model):
@@ -128,6 +131,7 @@ class Result(models.Model):
     class Meta:
         verbose_name = 'Результат тесту'
         verbose_name_plural = 'Результати тесту'
+
 
     def __str__(self):
         return f'{self.user_id} - {self.points}'

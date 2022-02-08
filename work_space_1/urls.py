@@ -1,14 +1,13 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from rest_framework.routers import SimpleRouter
 
-from test_app import views  #
-from test_app.views import ResultApiView, TestedUserApiView, AnswerApi
+from test_app import views
+from test_app.views import ResultApiView, TestedUserApiView  # AnswerApi, Testing
 
 router = SimpleRouter()
 router.register(r'user', TestedUserApiView)
 router.register(r'result', ResultApiView)
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),

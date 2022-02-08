@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from test_app.serializers import QuestionsSerializer, ResultSerializer, TestedUserSerializer, AnswerSerializer
-from test_app.models import Question, Answer_variants, Result, TestedUser, Answer
+from test_app.serializers import QuestionsSerializer, ResultSerializer, TestedUserSerializer
+from test_app.models import Result, TestedUser
 from test_app.logic import question, check_add_user, save_answer, get_test_info
 
 

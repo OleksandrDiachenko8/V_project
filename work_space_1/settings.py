@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+
     'django.contrib.auth',     # приложение авторизации юзеров
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'test_app.apps.TestAppConfig',
-
+    'django.contrib.admin',
+    'import_export',   # експорт
 ]
 
 MIDDLEWARE = [

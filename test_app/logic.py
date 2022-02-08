@@ -20,13 +20,13 @@ def question():
 
     current_test = Test.objects.filter(is_active=True)[0]
 
-    # all_questions in base
+    # -------------all_questions in base
     # all_questions_list = Question.objects.all()
-    # only_questions in this test
+    # -------------only_questions in this test
     all_questions_list = Question.objects.filter(test=current_test)
 
-    questions_quantity = len(all_questions_list)      # всього питань
-    test_quantity = current_test.quantity_questions   # питань потрібно для теста
+    questions_quantity = len(all_questions_list)  # всього питань
+    test_quantity = current_test.quantity_questions  # питань потрібно для теста
 
     if test_quantity <= questions_quantity:
         # Визначення скільки питань кожного виду для тесту, поміняти як визначиться звідки брати дані
@@ -42,7 +42,7 @@ def question():
         # parsing question_list for test
         test_question_list = []
         for i in range(1, 6):
-            test_question_list = test_question_list + question_choose(i, quantity[i-1])
+            test_question_list = test_question_list + question_choose(i, quantity[i - 1])
     else:
         test_question_list = []
 
@@ -75,7 +75,6 @@ def get_test_info():
     return current_test_time, current_test_info, current_test_by
 
 
-
 # save user answers and get result
 def save_answer(data):
     #                data
@@ -89,8 +88,9 @@ def save_answer(data):
         model = ['correct_answer1', 'correct_answer2', 'correct_answer3', 'correct_answer4', 'correct_answer5']
         ca_list = []
         for i in range(0, 5):
-            if len(obj.serializable_value(model[i])) > 0:
+            if obj.serializable_value(model[i]) is not None and len(obj.serializable_value(model[i])) > 0:
                 ca_list.append(obj.serializable_value(model[i]))
+        print("ca_list =", ca_list)
         return ca_list
 
     # витягуємо користувача через user_id from request after testing
@@ -111,6 +111,7 @@ def save_answer(data):
             # якщо відповідь користувача співпадає з записом в полі питання 'correct_answer'
             current_correct_answers = correct_answers.get(id=current_question.correct_answers.id)
             current_correct_answer = current_correct_answers.correct_answer1
+            print(current_correct_answer)
             if elem['answer'].strip().lower() == current_correct_answer.strip().lower():
                 point = current_question.max_points
             else:
@@ -132,6 +133,7 @@ def save_answer(data):
         elif current_question.question_type.name == 'MC':
             current_correct_answers = correct_answers.get(id=current_question.correct_answers.id)
             current_correct_answers_list = get_correct_answers(current_correct_answers)
+            print(current_correct_answers_list)
             user_answers = []
             for prop in elem['answer']:
                 user_answers.append(elem['answer'][prop])
@@ -147,10 +149,11 @@ def save_answer(data):
             point = 0
             pass
 
-        answer_t=round(elem['answer_time']/1000)
+        answer_t = round(elem['answer_time'] / 1000)
 
         user_result += point
-        table_entry = Answer(user_id=user, question_id=current_question, answer=user_answers, answer_time=answer_t, point=point)
+        table_entry = Answer(user_id=user, question_id=current_question, answer=user_answers, answer_time=answer_t,
+                             point=point)
         table_entry.save()
 
     percent = int((user_result * 100 / max_test_points) * 100) / 100
@@ -164,20 +167,17 @@ def save_answer(data):
     result_dict = {'user_id': data[0]['user_id'], 'points': user_result, 'percent': percent}
     return result_dict
 
-
-
-
 # def write_q():
 
 #     def read():
-#         # получим объект файла
+#
 #         file1 = open("/home/AlexDko/alexdko.pythonanywhere.com/sample.txt", "r")
 #         while True:
 #             ca5 =''
 #             ca4 =''
 #             ca3 =''
 #             ca2 =''
-#             # считываем строку
+#
 #             line = file1.readline()
 #             if not line:
 #                 break

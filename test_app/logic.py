@@ -70,9 +70,10 @@ def check_add_user(data):
 def get_test_info():
     current_test = Test.objects.filter(is_active=True)[0]
     current_test_time = current_test.time_for_test
+    current_test_questions_count = current_test.quantity_questions
     current_test_info = current_test.description
     current_test_by = current_test.by_text
-    return current_test_time, current_test_info, current_test_by
+    return current_test_time, current_test_info, current_test_by, current_test_questions_count
 
 
 # save user answers and get result

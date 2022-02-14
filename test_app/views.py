@@ -16,15 +16,19 @@ class Testing(APIView):
             response_data = {'user_id': -1, 'info': 'user already exists!!'}
             return Response(status=202, data=response_data)
         else:
-            current_test_time, current_test_description, current_test_by = get_test_info()
             data = question()
             serializer = QuestionsSerializer(data, many=True)
             response_data = serializer.data
-            response_data.insert(0, {'user_id': current_user,
-                                     'time_for_test': current_test_time,
-                                     'test_description': current_test_description,
-                                     'test_by': current_test_by})
+            response_data.insert(0, {'user_id': current_user})
             return Response(status=201, data=response_data)
+
+    def get(self, request):
+        current_test_time, current_test_description, current_test_by, current_test_questions_count = get_test_info()
+        response_data = {'time_for_test': current_test_time,
+                         'questions_count': current_test_questions_count,
+                         'test_description': current_test_description,
+                         'test_end_description': current_test_by}
+        return Response(status=201, data=response_data)
 
 
 # .../answers and result/    user answers ----> D save --> result

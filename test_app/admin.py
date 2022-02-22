@@ -1,9 +1,6 @@
 from django.contrib import admin
 from test_app.models import *
 
-from django.contrib.auth.models import Group
-admin.site.unregister(Group)
-
 # exported module
 from import_export.admin import ImportExportActionModelAdmin
 from import_export.admin import ExportActionMixin
@@ -11,12 +8,12 @@ from import_export import resources
 from import_export import fields
 from import_export.widgets import ForeignKeyWidget
 # exported module
+from django.contrib.auth.models import Group
+admin.site.unregister(Group)
 
 
 # --------------- CorrectAnswers section for Correct_answers Model-----------------------------------
-# old variant
-# class CorrectAnswers(admin.ModelAdmin):
-
+# old variant # class CorrectAnswers(admin.ModelAdmin):
 class CorrectAnswersResource(resources.ModelResource):
 
     class Meta:
@@ -46,8 +43,6 @@ admin.site.register(Correct_answers, CorrectAnswers)
 
 
 # --------------- AnswerVariants section for Answer_variants Model-----------------------------------
-# old variant
-# class AnswerVariants(admin.ModelAdmin):
 class AnswerVariantsResource(resources.ModelResource):
     variant1 = fields.Field(column_name='variant1', attribute='variant1', saves_null_values=False)
     variant2 = fields.Field(column_name='variant2', attribute='variant2', saves_null_values=False)
@@ -62,7 +57,7 @@ class AnswerVariantsResource(resources.ModelResource):
 
 class AnswerVariants(ImportExportActionModelAdmin):
     resource_class = AnswerVariantsResource
-    list_display = ('que_id', 'variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6')
+    list_display = ('id', 'que_id', 'variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6')
     search_fields = ('variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6')
 
     def que_id(self, obj):
@@ -77,9 +72,6 @@ admin.site.register(Answer_variants, AnswerVariants)
 
 
 # --------------- Results section for Result Model---------------------------------------------------
-# old variant
-# class Results(admin.ModelAdmin):
-
 class ResultResource(resources.ModelResource):
     id = fields.Field(column_name='id', attribute='id')
     user_id = fields.Field(column_name='user_id', attribute='user_id', widget=ForeignKeyWidget(TestedUser, 'id'))
@@ -98,6 +90,9 @@ class Results(ExportActionMixin, admin.ModelAdmin):
     resource_class = ResultResource
     list_display = ('user_id', 'user_lastname_show', 'test', 'points', 'percent')
     search_fields = ('user_id__email',)
+
+    def has_add_permission(self, request):
+        return False
 
     def user_lastname_show(self, obj):
         result = obj.user_id
@@ -171,6 +166,13 @@ admin.site.register(TestedUser, Testeduser)
 
 class Answers(admin.ModelAdmin):
     list_display = ('user_id', 'answer', 'answer_time', 'point', 'question_id')
+    list_display_links = None
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request):
+        return False
 
 
 admin.site.register(Answer, Answers)
@@ -179,9 +181,11 @@ admin.site.register(Answer, Answers)
 
 #  Для показу та додавання питань іншого типу в адмінці
 # ======================================================
-# class Question_t(admin.ModelAdmin):
-#     list_display = ('name',)
+"""
+class Question_t(admin.ModelAdmin):
+    list_display = ('name',)
 
 
-# admin.site.register(QuestionType, Question_t)
+admin.site.register(QuestionType, Question_t)
+"""
 # ======================================================
